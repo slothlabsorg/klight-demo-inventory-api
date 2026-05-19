@@ -1,0 +1,23 @@
+name: inventory-api
+port: 8081
+health: /health
+image: inventory-api:local
+
+needs: [postgres, kafka]
+
+depends:
+  - postgres:5432
+  - kafka:9092
+
+migration:
+  command: ["python", "-m", "app.migrate"]
+
+# Env vars klight injects. inventory-api has no upstream service deps — only infra.
+env:
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: inventory_db
+  DB_USER: klight
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  KAFKA_TOPIC_SALE_CREATED: sale.created
+  KAFKA_CONSUMER_GROUP: inventory-api-group
